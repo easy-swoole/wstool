@@ -169,15 +169,17 @@
 </div>
 <!-- 脚本 -->
 <script>
-    let Vm = new Vue({
+    "use strict";
+
+    var Vm = new Vue({
         el: "#root",
         data: {
-            consoleData: [],     // 控制台日志
-            messageData: [],     // 消息记录
+            consoleData: [], // 控制台日志
+            messageData: [], // 消息记录
             instance: WebSocket, // ws instance
             link: {
-                secure: "ws://",   // wss
-                address: '127.0.0.1:9501'  // 链接地址
+                secure: "ws://", // wss
+                address: '127.0.0.1:9501' // 链接地址
             },
             alert: {
                 class: 'success',
@@ -193,51 +195,52 @@
             SendClean: false,
             RecvClean: false
         },
-        created () {
-            this.addConsoleLine('success', '初始化成功 等待连接到服务器...')
+        created: function created () {
+            this.addConsoleLine('success', '初始化成功 等待连接到服务器...');
         },
+
         methods: {
             /**
              * 添加控制台日志记录
              * @param type 可选 任意 Bootstrap 颜色
              * @param content 日志内容
              */
-            addConsoleLine: function (type, content) {
+            addConsoleLine: function addConsoleLine (type, content) {
                 this.consoleData.push({
                     content: content,
                     type: type,
                     time: moment().format('YYYY-MM-DD HH:mm:ss')
-                })
-                Vm.scrollOver(document.getElementById('console-box'))
+                });
+                Vm.scrollOver(document.getElementById('console-box'));
             },
             /**
              * 添加消息记录
              * @param direction 0 收到消息 1 发送消息
              * @param content 消息内容
              */
-            addMessage: function (direction, content) {
+            addMessage: function addMessage (direction, content) {
                 this.messageData.push({
                     direction: direction,
                     content: content,
                     time: moment().format('YYYY-MM-DD HH:mm:ss')
-                })
+                });
             },
             /**
              * 同时显示控制台和弹出消息
              * @param content 需要显示的消息
              * @param status 消息状态
              */
-            showStatus: function (content, status) {
-                this.showTips(content, status)
-                this.addConsoleLine(status, content)
+            showStatus: function showStatus (content, status) {
+                this.showTips(content, status);
+                this.addConsoleLine(status, content);
             },
             /**
              * 显示提示消息
              * @param content 消息内容
              * @param className 消息样式名称 可选 任意 Bootstrap 颜色
              */
-            showTips: function (content, className) {
-                clearTimeout(this.alert.timer)
+            showTips: function showTips (content, className) {
+                clearTimeout(this.alert.timer);
                 this.alert.state   = false;
                 this.alert.class   = className;
                 this.alert.content = content;
@@ -245,116 +248,116 @@
                 this.alert.state = true;
                 this.alert.timer = setTimeout(function () {
                     Vm.alert.state = false;
-                }, 3000)
+                }, 3000);
             },
             /**
              * 创建 WebSocket 连接对象
              */
-            createWsConnect: function () {
+            createWsConnect: function createWsConnect () {
                 try {
-                    let wsInstance       = new WebSocket(this.link.secure + this.link.address)
+                    var wsInstance       = new WebSocket(this.link.secure + this.link.address);
                     wsInstance.onopen    = function () {
-                        Vm.showStatus('连接到服务器成功', 'success')
-                    }
+                        Vm.showStatus('连接到服务器成功', 'success');
+                    };
                     wsInstance.onerror   = function () {
-                        Vm.showStatus('连接到 WebSocket 服务器失败', 'danger')
-                    }
+                        Vm.showStatus('连接到 WebSocket 服务器失败', 'danger');
+                    };
                     wsInstance.onclose   = function (ev) {
-                        Vm.showStatus('连接已关闭 ' + ev.code + ev.reason, 'warning')
-                    }
+                        Vm.showStatus('连接已关闭 ' + ev.code + ev.reason, 'warning');
+                    };
                     wsInstance.onmessage = function (ev) {
-                        Vm.addMessage(0, ev.data)
-                        if (Vm.RecvClean) Vm.messageData = []
-                        Vm.scrollOver(document.getElementById('message-box'))
-                    }
-                    this.instance        = wsInstance
+                        Vm.addMessage(0, ev.data);
+                        if (Vm.RecvClean) Vm.messageData = [];
+                        Vm.scrollOver(document.getElementById('message-box'));
+                    };
+                    this.instance        = wsInstance;
                 } catch (err) {
-                    this.showStatus('创建 WebSocket 对象失败 请检查服务器地址', 'danger')
+                    this.showStatus('创建 WebSocket 对象失败 请检查服务器地址', 'danger');
                 }
             },
             /**
              * 向服务器发送消息
              */
-            sendData: function () {
+            sendData: function sendData () {
                 try {
-                    this.instance.send(this.sendArea)
-                    this.addMessage(1, this.sendArea)
-                    if (this.SendClean) this.sendArea = ''
+                    this.instance.send(this.sendArea);
+                    this.addMessage(1, this.sendArea);
+                    if (this.SendClean) this.sendArea = '';
                 } catch (err) {
-                    this.showStatus('消息发送失败 原因请查看控制台', 'danger')
-                    throw err
+                    this.showStatus('消息发送失败 原因请查看控制台', 'danger');
+                    throw err;
                 }
             },
             /**
              * URL 编码
              */
-            uriEncode: function () {
-                this.sendArea = encodeURIComponent(this.sendArea)
+            uriEncode: function uriEncode () {
+                this.sendArea = encodeURIComponent(this.sendArea);
             },
             /**
              * 转为 16 进制
              */
-            strToHexCharCode: function () {
+            strToHexCharCode: function strToHexCharCode () {
                 if (this.sendArea === "") return;
-                let hexCharCode = [];
-                for (let i = 0; i < this.sendArea.length; i++) {
-                    hexCharCode.push((this.sendArea.charCodeAt(i)).toString(16));
+                var hexCharCode = [];
+                for (var i = 0; i < this.sendArea.length; i++) {
+                    hexCharCode.push(this.sendArea.charCodeAt(i).toString(16));
                 }
-                this.sendArea = hexCharCode.join("")
+                this.sendArea = hexCharCode.join("");
             },
             /**
              * 转为 二进制
              */
-            strToBinary: function () {
-                let temp = ''
-                for (let i = 0; i < this.sendArea.length; i++) {
-                    temp += this.sendArea.charCodeAt(i).toString(2)
+            strToBinary: function strToBinary () {
+                var temp = '';
+                for (var i = 0; i < this.sendArea.length; i++) {
+                    temp += this.sendArea.charCodeAt(i).toString(2);
                 }
-                this.sendArea = temp
+                this.sendArea = temp;
             },
             /**
              * 转为 Base64
              */
-            strToBase64: function () {
-                this.sendArea = btoa(this.sendArea)
+            strToBase64: function strToBase64 () {
+                this.sendArea = btoa(this.sendArea);
             },
             /**
              * 发送心跳包
              */
-            sendPING: function () {
+            sendPING: function sendPING () {
                 try {
-                    this.addConsoleLine('primary', '心跳发送 ' + this.beatC)
-                    this.instance.send(this.beatC)
+                    this.addConsoleLine('primary', '心跳发送 ' + this.beatC);
+                    this.instance.send(this.beatC);
                 } catch (err) {
-                    this.showStatus('心跳发送失败 原因请查看控制台', 'danger')
-                    throw err
+                    this.showStatus('心跳发送失败 原因请查看控制台', 'danger');
+                    throw err;
                 }
             },
             /**
              * 自动心跳
              */
-            autoPING: function () {
-                this.autoSend  = true
+            autoPING: function autoPING () {
+                this.autoSend  = true;
                 this.autoTimer = setInterval(function () {
-                    Vm.sendPING()
-                }, this.beatS * 1000)
+                    Vm.sendPING();
+                }, this.beatS * 1000);
             },
             /**
              * 关闭自动心跳
              */
-            cleanPING: function () {
-                this.autoSend = false
-                clearInterval(this.autoTimer)
+            cleanPING: function cleanPING () {
+                this.autoSend = false;
+                clearInterval(this.autoTimer);
             },
             /**
              * 滚动到最底
              * @param e
              */
-            scrollOver: function (e) {
+            scrollOver: function scrollOver (e) {
                 e.scrollTop = e.scrollHeight;
             }
         }
-    })
+    });
 </script>
 </body>
 </html>
