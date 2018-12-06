@@ -64,13 +64,10 @@ var Vm = new Vue({
         },
         autoWsConnect: function () {
             try {
-
-                localStorage.setItem('address', this.address)
-
-                var wsInstance = new WebSocket(this.address);
-                var _this      = Vm
-
-                if (this.connected === false) {
+                if (this.connected === false){
+                    localStorage.setItem('address', this.address)
+                    var wsInstance = new WebSocket(this.address);
+                    var _this      = Vm
                     wsInstance.onopen    = function (ev) {
                         console.warn(ev)
                         _this.connected = true
@@ -98,10 +95,9 @@ var Vm = new Vue({
                         }
                     }
                     this.instance        = wsInstance;
-                } else {
+                }else {
                     this.instance.close(1000, 'Active closure of the user')
                 }
-
             } catch (err) {
                 console.warn(err)
                 this.writeAlert('danger', '创建 WebSocket 对象失败 请检查服务器地址')
@@ -201,6 +197,9 @@ var Vm = new Vue({
             if (e) {
                 e.scrollTop = e.scrollHeight;
             }
+        },
+        cleanMessage: function () {
+            this.messageData = [];
         }
     }
 });
